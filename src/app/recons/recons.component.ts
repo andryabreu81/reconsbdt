@@ -195,9 +195,9 @@ export class ReconsComponent {
   num_referencia: string = '';
 
   // ruta URL o DNS del servidor del backend de Node JS
-  //server = 'http://localhost:3000';
+  server = 'http://localhost:3000';
   //server = 'https://apireconsdev.bdt.com.ve';
-  server = 'https://apirecons.bdt.com.ve';
+  //server = 'https://apirecons.bdt.com.ve';
   //server = 'https://apireconsqa.bdt.com.ve';
 
   // Se prepara la URL del a API Rest de node JS
