@@ -1,0 +1,538 @@
+
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcSMxksAAAAAHZe8DI_8_pBYkp5o4UuRF7-TGV3"></script>
+<div class="layout-wrapper layout-content-navbar">
+  <div class="layout-container">
+    <!-- Layout container -->
+    <div class="layout-page">
+      <!-- Content wrapper -->
+      <div class="content-wrapper">
+        <!-- Content -->
+        <div class="container-xxl flex-grow-1 container-p-y">
+          <div class="row my-4">
+            <div class="col">
+            <div class="content-wrapper" align="left"><img [src]="logoBDT" alt="Logo BDT" width="330px"></div>
+              <hr>
+              <h2>Solicitud de Reconsideraciones de Reclamo</h2>
+              <div class="alert alert-primary d-flex" role="alert">
+                <span class="badge badge-center rounded-pill border-label-primary bg-primary p-3 me-2"><i class="fa fa-info"></i></span>
+                <div class="d-flex flex-column ps-1">
+                  <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">Informaci&oacute;n</h6>
+                  <span>Por favor complete los siguientes datos para registrar la reconsideraci&oacute;n de su reclamo.</span>
+                </div>
+              </div>
+              <form (ngSubmit)="onSubmit()" #reconsForm="ngForm">
+              <div class="accordion" id="collapsibleSection">
+
+
+                <!-- ✅ Datos personales (solo una vez) -->
+<div class="card mb-4">
+  <div class="card-header">
+    <h5>Datos del Cliente</h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="nombre_completo">Nombres y Apellidos / Razón Social</label>
+        <input
+          type="text"
+          [(ngModel)]="datosPersonales.nombre_completo"
+          name="nombre_completo"
+          class="form-control"
+          (blur)="validateNombreCliente()"
+          appInputFilter="text"
+          required
+        />
+      </div>
+      <div class="col-md-3">
+        <label for="cedula">N° Documento de Identificación</label>
+        <input
+          type="text"
+          [(ngModel)]="datosPersonales.cedula"
+          name="cedula"
+          class="form-control"
+          (blur)="validateCedula()"
+          appInputFilter="numeric"
+          maxlength="8"
+          minlength="6"
+          required
+        />
+      </div>
+      <div class="col-md-3">
+        <label for="rif">N° RIF</label>
+        <input
+          type="text"
+          [(ngModel)]="datosPersonales.rif"
+          name="rif"
+          class="form-control"
+          (blur)="validateRif()"
+          appInputFilter="alphanumeric"
+          maxlength="9"
+          minlength="6"
+          required
+        />
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="tlf">Número de Teléfono / Local / Celular</label>
+        <input
+          type="text"
+          [(ngModel)]="datosPersonales.tlf"
+          name="tlf"
+          class="form-control"
+          (blur)="validatePhone()"
+          appInputFilter="numeric"
+          maxlength="11"
+          minlength="11"
+          required
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="email">Correo Electrónico</label>
+        <input
+          type="email"
+          [(ngModel)]="datosPersonales.email"
+          name="email"
+          class="form-control"
+          (blur)="validateEmail()"
+          appInputFilter="email"
+          required
+        />
+      </div>
+      </div>
+    <div class="row g-3">
+      <div class="col-md-12">
+        <label for="direccion">Dirección de Habitación</label>
+        <input
+          type="text"
+          [(ngModel)]="datosPersonales.direccion"
+          name="direccion"
+          class="form-control"
+          (blur)="validateDireccion()"
+
+          required
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Bloques de reclamos (dinámicos) -->
+@for (reclamo of reclamos; track $index) {
+  <div class="card accordion-item mb-3">
+    <h2 class="accordion-header" [id]="'headingReclamo' + $index">
+      <button
+        type="button"
+        class="accordion-button collapsed"
+        data-bs-toggle="collapse"
+        [attr.data-bs-target]="'#collapseReclamo' + $index"
+        aria-expanded="false"
+        [attr.aria-controls]="'collapseReclamo' + $index"
+      >
+        Reclamo {{ $index + 1 }}
+        @if (reclamos.length > 1) {
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger ms-2"
+            (click)="eliminarReclamo($index); $event.stopPropagation()"
+            title="Eliminar este reclamo"
+          >
+            <i class="fa fa-trash"></i>
+          </button>
+        }
+      </button>
+    </h2>
+
+    <div
+      [id]="'collapseReclamo' + $index"
+      class="accordion-collapse collapse"
+      [attr.aria-labelledby]="'headingReclamo' + $index"
+      data-bs-parent="#collapsibleSection"
+    >
+      <div class="accordion-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="fecha_reclamo_{{ $index }}">Fecha de Reclamo *</label>
+            <input
+              type="date"
+              [(ngModel)]="reclamo.fecha_reclamo"
+              [name]="'fecha_reclamo_' + $index"
+              [max]="today"
+              class="form-control"
+              (blur)="validateFechaReclamo()"
+              required
+            />
+          </div>
+
+          <div class="col-md-4">
+          <label for="tipo_producto_{{ $index }}">Tipo de Producto *</label>
+          <select
+            [(ngModel)]="reclamo.tipo_producto"
+            [name]="'tipo_producto_' + $index"
+            class="form-control"
+            (change)="validateTipoProducto($index)"
+            required
+          >
+            <option value="">Seleccione...</option>
+            @for (item of tiposProducto; track item.product_claim_type_id) {
+              <option [value]="item.product_claim_type_id">{{ item.product_claim_name }}</option>
+            }
+          </select>
+        </div>
+          <div class="col-md-4">
+            <label for="tipo_reclamo_{{ $index }}">Tipo de Reclamo *</label>
+            <select
+              [(ngModel)]="reclamo.tipo_reclamo"
+              [name]="'tipo_reclamo_' + $index"
+              class="form-control"
+              (blur)="validateTipoReclamo()"
+              required
+            >
+              <option value="">Seleccione...</option>
+              @for (item of tiposReclamo; track item.claim_type_id) {
+                <option [value]="item.claim_type_id">{{ item.claim_type_name }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="num_reclamo_{{ $index }}">N° de Reclamo *</label>
+            <input
+              type="text"
+              [(ngModel)]="reclamo.num_reclamo"
+              [name]="'num_reclamo_' + $index"
+              class="form-control"
+              (blur)="validateNumReclamo()"
+              appInputFilter="numeric"
+              required
+            />
+          </div>
+          <div class="col-md-4">
+            <label for="num_referencia_{{ $index }}">N° de Referencia</label>
+            <input
+              type="text"
+              [(ngModel)]="reclamo.num_referencia"
+              [name]="'num_referencia_' + $index"
+              class="form-control"
+              (blur)="validateNumReferencia()"
+              appInputFilter="numeric"
+            />
+          </div>
+          <div class="col-md-4">
+            <label for="monto_{{ $index }}">Monto</label>
+            <input
+              type="text"
+              [(ngModel)]="reclamo.monto"
+              [name]="'monto_' + $index"
+              class="form-control"
+              (blur)="validateMonto()"
+              appInputFilter="numeric"
+            />
+          </div>
+        </div>
+
+        <br />
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="num_tarjeta_{{ $index }}">Número de Tarjeta (Coloque la numeración completa)</label>
+            <input
+              type="text"
+              [(ngModel)]="reclamo.num_tarjeta"
+              [name]="'num_tarjeta_' + $index"
+              class="form-control"
+              (blur)="validateNumTarjeta()"
+              appInputFilter="numeric"
+              maxlength="19"
+            />
+          </div>
+          <div class="col-md-6">
+            <label for="num_cuenta_{{ $index }}">Número de Cuenta (Coloque la numeración completa)</label>
+            <input
+              type="text"
+              [(ngModel)]="reclamo.num_cuenta"
+              [name]="'num_cuenta_' + $index"
+              class="form-control"
+              (blur)="validateNumCuenta()"
+              appInputFilter="numeric"
+              maxlength="20"
+            />
+          </div>
+        </div>
+
+        <br />
+        <div class="row g-3">
+          <div class="col-md-12">
+            <label for="descripcion_{{ $index }}">Descripción clara y precisa de los hechos sucedidos. (Coloque los datos de la transaccion reclamada, lugar, fecha, hora y monto)</label>
+            <textarea
+              rows="5"
+              [(ngModel)]="reclamo.descripcion"
+              [name]="'descripcion_' + $index"
+              class="form-control"
+              (blur)="validateDescripcion()"
+
+              required
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ✅ Botón para agregar más reclamos -->
+<div class="text-center mb-4">
+  <button
+    type="button"
+    class="btn btn-outline-info"
+    (click)="agregarReclamo()"
+  >
+    <i class="fa fa-plus me-2"></i>Agregar otro reclamo
+  </button>
+</div>
+
+<div class="text-center mb-4 captcha-container" style="margin-bottom: 20px;">
+    <re-captcha (resolved)="resolved($event)"></re-captcha>
+</div>
+
+<div align="center" class="mt-4">
+  <button
+    style="background-color: #2A3D98; color: white;"
+    type="submit"
+    class="btn me-1 me-sm-3"
+    [disabled]="reclamos.length === 0 || tieneProductosDuplicados()"
+  >
+    <i class="fa fa-save me-2"></i>Enviar todos los reclamos
+  </button>
+  <button
+    type="reset"
+    class="btn btn-label-secondary"
+    (click)="reclamos = [{
+      fecha_reclamo: '',
+      num_reclamo: '',
+      tipo_reclamo: 0,
+      tipo_producto: 0,
+      num_referencia: '',
+      monto: '',
+      num_tarjeta: '',
+      num_cuenta: '',
+      descripcion: ''
+      }];
+      datosPersonales = { nombre_completo: '', cedula: '', rif: '', tlf: '', email: '', direccion: '' }; registroExitoso = false"
+  >
+    <i class="fa fa-trash me-2"></i>Limpiar todo
+  </button>
+</div>
+              </div>
+            </form>
+            </div>
+          </div>
+        {{ fechaActual | date:'yyyy' }} - &copy; <a href="https://www.bdt.com.ve" target="_blank">Banco Digital de los Trabajadores</a> Banco Universal C.A. RIF: G-20009148-7 | Todos los derechos reservados
+        </div>
+        <!-- / Content -->
+
+        <!-- Vista previa para PDF (oculta visualmente) -->
+
+        <!-- se genera el PDF si se encuentras resultados de busqueda de la recons correspondiente al numero de cedula -->
+           <!-- html del PDF -->
+
+        @if (getReconsResponse){
+
+          <div style="color: #000;" class="alert alert-info mt-4" role="alert">
+                            <!-- <i class="fa fa-check-circle me-2"></i> -->
+                            <div class="alert alert-primary d-flex" role="alert">
+                              <span class="badge badge-center rounded-pill border-label-primary bg-primary p-3 me-2"><i class="fa fa-info"></i></span>
+                              <div class="d-flex flex-column ps-1">
+                                <!-- <h6 class="alert-heading d-flex align-items-center fw-bold mb-1">Importante!</h6> -->
+                                <p>Buen día,</p>
+                                <p>Un gusto en saludarle, para procesar su requerimiento por favor envié los siguientes recaudos al correo <span style="color: #233678;font-weight: bold;">defensor.cliente&#64;bdt.com.ve</span> y con gusto de atenderemos: </p>
+                                <ul>
+                                  <li>Carta de no procedencia (firmada).</li>
+                                  <li>Carta de exposición de motivos (firmada).</li>
+                                  <li>Planilla de Reconsideración de Reclamo (firmada).</li>
+                                </ul>
+                                <p>Le informamos que, a partir de hoy, usted tiene un plazo de tres (3) días continuos para enviar los recaudos al correo antes señalado, de no recibir los mismos, su solicitud será cerrada por falta de requisitos.</p>
+                                <p>En espera de lo solicitado.</p>
+                                <p>Defensoría del Cliente y Usuario Bancario.</p>
+                                <p>Banco Digital de los Trabajadores, Banco Universal, C.A.</p>
+                              </div>
+                            </div>
+
+                          </div>
+                          <div class="text-center mb-4">
+                            <button type="button"
+                              class="btn btn-primary btn-lg"
+                              (click)="getCedula()" [(ngModel)]="datosPersonales.cedula"
+                              style="background-color: #FA485D; border-color:#FA485D;color:white;">
+                              <i class="fa fa-file-pdf me-2"></i>Descargar Planilla de Reconsideración en PDF
+                            </button>
+                          </div>
+
+              <div
+                id="pdf-preview"
+                style="
+                  width: 210mm;
+                  min-height: 297mm;
+                  padding: 15mm;
+                  background: white;
+                  font-family: Arial, sans-serif;
+                  font-size: 12px;
+                  box-sizing: border-box;
+                  position: absolute;
+                  left: -10000px;
+                  top: -10000px;
+                ">
+                <div class="content-wrapper" align="left"><img [src]="logoBDT" alt="Logo BDT" width="330px"></div>
+                <div style="text-align: right; font-size: 12px;color: #2A3D98;font-weight: bold;">
+                  Fecha: {{ fechaActual | date:'dd/MM/yyyy' }}
+                </div>
+
+                <h6 style="text-align: center; margin-bottom: 20px; color: #2A3D98;font-weight: bold;">
+                  SOLICITUD DE RECONSIDERACIÓN DE RECLAMO
+                </h6>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;border: 0px solid #000;">
+
+                  <tr style="background-color: #2A3D98; color: white;font-weight: bold;">
+                    <td align="center">Datos de la Oficina</td>
+                  </tr>
+                  <tr style="background-color: #C8C8C8; color: black;">
+                    <th>Nombre</th>
+                  </tr>
+                  <tr>
+                    <td>Defensoría del cliente y usuario bancario</td>
+                  </tr>
+                </table>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;border: 0px solid #000;">
+                  <tr>
+                    <td colspan="3" align="center" style="background: #2A3D98; color: white;font-weight: bold;">Datos del Cliente</td>
+                  </tr>
+                  <tr style="background-color: #C8C8C8; color: black;">
+                    <th>Nombre y Apellidos / Razón Social</th>
+                    <th>Número de Identificación</th>
+                    <th>N° RIF</th>
+                  </tr>
+                  <tr>
+                    <td>{{ datosPersonales.nombre_completo }}</td>
+                    <td>{{ datosPersonales.cedula }}</td>
+                    <td>{{ datosPersonales.rif }}</td>
+                  </tr>
+                  <tr style="background-color: #C8C8C8; color: black;">
+                    <th>Número de Teléfono</th>
+                    <th colspan="2">Correo Electrónico</th>
+                  </tr>
+                  <tr>
+                    <td>{{ datosPersonales.tlf }}</td>
+                    <td colspan="2">{{ datosPersonales.email }}</td>
+                  </tr>
+                  <tr style="background-color: #C8C8C8; color: black;">
+                    <th colspan="3" align="center">Dirección de Habitación</th>
+                  </tr>
+                  <tr>
+                    <td colspan="3">{{ datosPersonales.direccion }}</td>
+                  </tr>
+                </table>
+
+                @for (reclamo of reclamos; track $index) {
+                  <div style="margin-bottom: 20px; border: 1px solid #2A3D98; padding: 10px; border-radius: 5px;">
+                    <h6 style="color: #2A3D98; margin-top: 0;">RECLAMO N° {{ $index + 1 }}</h6>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                      <thead>
+                        <tr style="background-color: #C8C8C8; color: black; font-size: 10px;">
+                          <th style="border: 1px solid #ddd; padding: 4px;">Fecha</th>
+                          <th style="border: 1px solid #ddd; padding: 4px;">N° Reclamo</th>
+                          <th style="border: 1px solid #ddd; padding: 4px;">Tipo Producto</th>
+                          <th style="border: 1px solid #ddd; padding: 4px;">Tipo Reclamo</th>
+                          <th style="border: 1px solid #ddd; padding: 4px;">Referencia</th>
+                          <th style="border: 1px solid #ddd; padding: 4px;">Monto</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style="text-align: center; font-size: 11px;">
+                          <td style="border: 1px solid #ddd; padding: 4px;">{{ reclamo.fecha_reclamo | date:'dd/MM/yyyy' }}</td>
+                          <td style="border: 1px solid #ddd; padding: 4px;">{{ reclamo.num_reclamo }}</td>
+                          <td style="border: 1px solid #ddd; padding: 4px;">
+                            {{ tiposProductos[reclamo.tipo_producto] || 'No especificado' }}
+                          </td>
+                          <td style="border: 1px solid #ddd; padding: 4px;">
+                            {{ tiposReclamos[reclamo.tipo_reclamo] || 'No especificado' }}
+                          </td>
+                          <td style="border: 1px solid #ddd; padding: 4px;">{{ reclamo.num_referencia }}</td>
+                          <td style="border: 1px solid #ddd; padding: 4px;">{{ reclamo.monto }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px;">
+                      <tr style="background-color: #C8C8C8;">
+                        <th style="border: 1px solid #ddd; padding: 4px;">Número de Tarjeta</th>
+                        <th style="border: 1px solid #ddd; padding: 4px;">Número de Cuenta</th>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid #ddd; padding: 4px;">{{ reclamo.num_tarjeta }}</td>
+                        <td style="border: 1px solid #ddd; padding: 4px;">{{ reclamo.num_cuenta }}</td>
+                      </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                      <tr style="background-color: #C8C8C8;">
+                        <th style="border: 1px solid #ddd; padding: 4px;">Descripción de los hechos</th>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: justify;">{{ reclamo.descripcion }}</td>
+                      </tr>
+                    </table>
+                  </div>
+                }
+
+
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;border: 0px solid #000;">
+
+                  <tr style="background: #2A3D98; color: white;font-weight: bold;">
+                    <th>Firma / Huella del cliente</th>
+                    <th style="text-align:right;">Recibido por:</th>
+                  </tr>
+                  <tr>
+                    <td><p>___________________</p></td>
+                    <td>
+                      <div style="text-align: right;">
+                        <p>Nombres y Apellidos: ___________________</p>
+                        <p>Cargo: ___________________</p>
+                        <p>Firma / Sello de la Oficina</p>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+
+
+
+
+                <!-- Pie de página -->
+                <div style="margin-top: 0px; text-align: right; font-size: 10px;">
+                  FO-NA003-003-01/06-26
+                </div>
+              </div>
+
+        }
+
+
+        <!-- Footer -->
+        <footer class="content-footer footer bg-footer-theme">
+          <div class="container-xxl d-flex flex-column flex-md-row flex-wrap justify-content-between py-2">
+          </div>
+        </footer>
+        <!-- / Footer -->
+        <div class="content-backdrop fade"></div>
+      </div>
+      <!-- Content wrapper -->
+    </div>
+    <!-- / Layout page -->
+  </div>
+  <!-- Overlay -->
+  <div class="layout-overlay layout-menu-toggle"></div>
+  <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+  <div class="drag-target" style="touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div>
+</div>
+

@@ -27,17 +27,34 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/sneat/assets/vendor/fonts/fontawesome.css",
+              "src/sneat/assets/vendor/css/core.css",
+              "src/sneat/assets/css/demo.css",
+              "src/sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css",
+              "src/sneat/assets/vendor/libs/typeahead-js/typeahead.css",
+              "src/sneat/assets/vendor/libs/apex-charts/apex-charts.css",
+              "src/sneat/assets/vendor/libs/flatpickr/flatpickr.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/sneat/assets/vendor/js/helpers.js",
+              "src/sneat/assets/vendor/js/template-customizer.js",
+              "src/sneat/assets/vendor/libs/jquery/jquery.js",
+              "src/sneat/assets/vendor/libs/popper/popper.js",
+              "src/sneat/assets/vendor/js/bootstrap.js",
+              "src/sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js",
+              "src/sneat/assets/vendor/libs/flatpickr/flatpickr.js",
+              "src/sneat/assets/vendor/libs/apex-charts/apexcharts.js",
+              "src/sneat/assets/js/main.js"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "10mB",
+                  "maximumError": "10MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -92,5 +109,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
